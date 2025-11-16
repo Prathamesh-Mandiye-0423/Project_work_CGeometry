@@ -187,7 +187,7 @@ function App() {
       {/* Footer */}
       <footer className="app-footer">
         <p>
-          Made with ❤️ using FastAPI + React + TypeScript |{" "}
+          Made using FastAPI + React + TypeScript |{" "}
           <a
             href="http://localhost:8000/docs"
             target="_blank"
