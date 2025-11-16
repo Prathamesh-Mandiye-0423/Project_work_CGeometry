@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import  { useState, useEffect } from 'react';
 import Canvas from './components/Canvas';
 import ControlPanel from './components/ControlPanel';
 import ResultPanel from './components/ResultPanel';
