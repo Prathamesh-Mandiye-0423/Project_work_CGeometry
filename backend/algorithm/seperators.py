@@ -58,6 +58,7 @@ class RectangleSeperator:
             return {'rectangles':[], 'blue_covered': 0, 'red_covered': 0}
         best_rects=None
         min_blue_count=float('inf')
+        EPS=1e-6
         # First veertical sweep line
         red_sorted_y=sorted(self.red_points,key=lambda p:p.y)
         for i in range(len(red_sorted_y)-1):
@@ -65,7 +66,7 @@ class RectangleSeperator:
             # Get red points above and below the split
             lower_red=[p for p in self.red_points if p.y <= split_y]
             upper_red=[p for p in self.red_points if p.y > split_y]
-            if not lower_red or upper_red:
+            if not lower_red or not upper_red:
                 continue
             lower_bounds=(self.find_bounding_rect(lower_red))
             upper_bounds=(self.find_bounding_rect(upper_red))
@@ -73,20 +74,20 @@ class RectangleSeperator:
             rect1=Rectangle(
                 lower_bounds[0],
                 lower_bounds[2],
-                lower_bounds[1]-lower_bounds[0],
-                lower_bounds[3]-lower_bounds[2]
+                max(lower_bounds[1]-lower_bounds[0],EPS),
+                max(lower_bounds[3]-lower_bounds[2],EPS)
                 # add some buffer if required
             )
 
             rect2=Rectangle(
                 upper_bounds[0],
                 upper_bounds[2],
-                upper_bounds[1]-upper_bounds[0],
-                upper_bounds[3]-upper_bounds[2]
+                max(upper_bounds[1]-upper_bounds[0],EPS),
+                max(upper_bounds[3]-upper_bounds[2],EPS)
                 # add some buffer if required
             )
-            blue_count=self.count_blue_in_rect(rect1)+
-                self.count_blue_in_rect(rect2)
+
+            blue_count= (self.count_blue_in_rect(rect1) + self.count_blue_in_rect(rect2))
             if blue_count < min_blue_count:
                 min_blue_count=blue_count
                 best_rects=(rect1,rect2)
@@ -105,24 +106,23 @@ class RectangleSeperator:
             rect1=Rectangle(
                 left_bounds[0],
                 left_bounds[2],
-                left_bounds[1]-left_bounds[0],
-                left_bounds[3]-left_bounds[2]
+                max(left_bounds[1]-left_bounds[0],EPS),
+                max(left_bounds[3]-left_bounds[2],EPS)
             )
 
             rect2=Rectangle(
                 right_bounds[0],
                 right_bounds[2],
-                right_bounds[1]-right_bounds[0],
-                right_bounds[3]-right_bounds[2]
+                max(right_bounds[1]-right_bounds[0],EPS),
+                max(right_bounds[3]-right_bounds[2],EPS)
             )
 
-            blue_count=self.count_blue_in_rect(rect1)+
-                self.count_blue_in_rect(rect2)
+            blue_count=self.count_blue_in_rect(rect1) + self.count_blue_in_rect(rect2)
             if blue_count < min_blue_count:
                 min_blue_count=blue_count
                 best_rects=(rect1,rect2)
         return {
-            'rectangles': [r.to_ddict() for r in best_rects] if best_rects else [],
+            'rectangles': [r.to_dict() for r in best_rects] if best_rects else [],
             'blue_covered': int(min_blue_count) if min_blue_count!=float('inf') else 0,
             'red_covered': len(self.red_points)
         }
@@ -154,7 +154,7 @@ class SquareSeperator:
     def solve(self)->Dict:
         if not self.red_points:
             return {"squares":[],"blue_covered":0,"red_coverd":0}
-        
+        EPS=1e-6
         best_squares=None
         min_blue_count=float('inf')
         red_sorted_y=sorted(self.red_points,key=lambda p:p.y)
@@ -173,20 +173,19 @@ class SquareSeperator:
             square1=Rectangle(
                 lower_bounds[0],
                 lower_bounds[2],
-                side1,
-                side1
+                max(side1,EPS),
+                max(side1,EPS)
             )
             #Add buffer if required
 
             square2=Rectangle(
                 upper_bounds[0],
                 upper_bounds[2],
-                side2,
-                side2
+                max(side2,EPS),
+                max(side2,EPS)
             )
             # Add buffer if required
-            blue_count=self.count_blue_in_square(square1)+
-                self.count_blue_in_square(square2)
+            blue_count=self.count_blue_in_square(square1) + self.count_blue_in_square(square2)
             if blue_count < min_blue_count:
                 min_blue_count=blue_count
                 best_squares=(square1,square2)
@@ -218,14 +217,13 @@ class SquareSeperator:
                 side2
             )
 
-            blue_count=self.count_blue_in_square(square1)+
-                self.count_blue_in_square(square2)
+            blue_count=self.count_blue_in_square(square1) + self.count_blue_in_square(square2)
             if blue_count < min_blue_count:
                 min_blue_count=blue_count
                 best_squares=(square1,square2)
 
         return {
-            "squares":[s.to_doct for s in best_squares] if best_squares else [],
+            "squares":[s.to_dict() for s in best_squares] if best_squares else [],
             "blue_covered": int(min_blue_count) if min_blue_count!=float('inf') else 0,
             "red_covered": len(self.red_points)
         }
